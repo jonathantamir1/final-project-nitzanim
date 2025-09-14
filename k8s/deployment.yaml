@@ -1,0 +1,192 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: status-page-app
+  namespace: status-page
+  labels:
+    app: status-page
+    component: app
+spec:
+  replicas: 3  # Cost optimization: start with 3 replicas
+  selector:
+    matchLabels:
+      app: status-page
+      component: app
+  template:
+    metadata:
+      labels:
+        app: status-page
+        component: app
+    spec:
+      containers:
+      - name: status-page
+        image: status-page-app:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: DEBUG
+        - name: ALLOWED_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: ALLOWED_HOSTS
+        - name: TIME_ZONE
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: TIME_ZONE
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: DATABASE_NAME
+        - name: DATABASE_USER
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: DATABASE_USER
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: DATABASE_HOST
+        - name: DATABASE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: DATABASE_PORT
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: REDIS_PORT
+        - name: REDIS_DB
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: REDIS_DB
+        - name: EMAIL_BACKEND
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: EMAIL_BACKEND
+        - name: EMAIL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: EMAIL_HOST
+        - name: EMAIL_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: EMAIL_PORT
+        - name: EMAIL_USE_TLS
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: EMAIL_USE_TLS
+        - name: STATIC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: STATIC_URL
+        - name: MEDIA_URL
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: MEDIA_URL
+        - name: SECURE_SSL_REDIRECT
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: SECURE_SSL_REDIRECT
+        - name: SECURE_PROXY_SSL_HEADER
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: SECURE_PROXY_SSL_HEADER
+        - name: SESSION_COOKIE_SECURE
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: SESSION_COOKIE_SECURE
+        - name: CSRF_COOKIE_SECURE
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: CSRF_COOKIE_SECURE
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: status-page-config
+              key: LOG_LEVEL
+        # Secrets
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: status-page-secrets
+              key: SECRET_KEY
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: status-page-secrets
+              key: DATABASE_PASSWORD
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: status-page-secrets
+              key: REDIS_PASSWORD
+        - name: EMAIL_HOST_USER
+          valueFrom:
+            secretKeyRef:
+              name: status-page-secrets
+              key: EMAIL_HOST_USER
+        - name: EMAIL_HOST_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: status-page-secrets
+              key: EMAIL_HOST_PASSWORD
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health/
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: static-files
+          mountPath: /app/static
+        - name: media-files
+          mountPath: /app/media
+      volumes:
+      - name: static-files
+        emptyDir: {}
+      - name: media-files
+        emptyDir: {}
+      restartPolicy: Always

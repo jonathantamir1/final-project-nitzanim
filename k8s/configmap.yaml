@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: status-page-config
+  namespace: status-page
+data:
+  # Django Settings
+  DEBUG: "False"
+  ALLOWED_HOSTS: "status.yourdomain.com,localhost"
+  TIME_ZONE: "UTC"
+  
+  # Database Settings (will be overridden by secrets)
+  DATABASE_NAME: "statuspage"
+  DATABASE_USER: "statuspage"
+  DATABASE_HOST: "status-page-prod-db.cluster-xyz.us-west-2.rds.amazonaws.com"
+  DATABASE_PORT: "5432"
+  
+  # Redis Settings (will be overridden by secrets)
+  REDIS_HOST: "status-page-prod-redis.xyz.cache.amazonaws.com"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  
+  # Email Settings
+  EMAIL_BACKEND: "django.core.mail.backends.smtp.EmailBackend"
+  EMAIL_HOST: "smtp.gmail.com"
+  EMAIL_PORT: "587"
+  EMAIL_USE_TLS: "True"
+  
+  # Static Files
+  STATIC_URL: "/static/"
+  MEDIA_URL: "/media/"
+  
+  # Security
+  SECURE_SSL_REDIRECT: "True"
+  SECURE_PROXY_SSL_HEADER: "HTTP_X_FORWARDED_PROTO,https"
+  SESSION_COOKIE_SECURE: "True"
+  CSRF_COOKIE_SECURE: "True"
+  
+  # Logging
+  LOG_LEVEL: "INFO"

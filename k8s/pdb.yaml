@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: status-page-pdb
+  namespace: status-page
+spec:
+  minAvailable: 1  # Cost optimization: allow disruption of 1 pod
+  selector:
+    matchLabels:
+      app: status-page
+      component: app
