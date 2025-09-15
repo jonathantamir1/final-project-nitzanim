@@ -1,0 +1,54 @@
+# Terraform Variables Example
+# Copy this file to terraform.tfvars and update the values
+
+# AWS Configuration
+aws_region = "us-west-2"
+project_name = "status-page"
+environment = "prod"
+
+# VPC Configuration
+vpc_cidr = "10.0.0.0/16"
+
+# Key Pair
+key_pair_name = "status-page-key"
+
+# EKS Configuration
+eks_node_groups = {
+  system = {
+    instance_types = ["t3.medium"]
+    capacity_type  = "ON_DEMAND"
+    min_size      = 1
+    max_size      = 3
+    desired_size  = 2
+    disk_size     = 50
+  }
+  application = {
+    instance_types = ["t3.medium", "t3.large"]
+    capacity_type  = "SPOT"
+    min_size      = 1
+    max_size      = 5
+    desired_size  = 2
+    disk_size     = 50
+  }
+}
+
+# RDS Configuration
+rds_instance_class = "db.t3.micro"
+rds_allocated_storage = 20
+rds_engine_version = "14.9"
+
+# Redis Configuration
+redis_node_type = "cache.t3.micro"
+
+# Jenkins Configuration
+jenkins_instance_type = "t3.small"
+
+# Cost Optimization
+enable_spot_instances = true
+enable_auto_scaling = true
+backup_retention_days = 7
+enable_detailed_monitoring = false
+
+# Security
+allowed_cidr_blocks = ["0.0.0.0/0"]  # WARNING: Change this in production
+enable_waf = false
